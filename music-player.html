@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 My Playlist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg1: #0d0d1a;
+    --bg2: #1a1a2e;
+    --surface: rgba(255,255,255,0.06);
+    --surface-hover: rgba(255,255,255,0.1);
+    --accent: #a78bfa;
+    --accent2: #818cf8;
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --radius: 16px;
+    --player-h: 100vh;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', 'Space Grotesk', sans-serif;
+    background: var(--bg1);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── ANIMATED BACKGROUND ── */
+  #bg-scene {
+    position: fixed; inset: 0; z-index: 0;
+    transition: background 1.2s ease;
+  }
+  #bg-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0.55;
+  }
+  #bg-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.65) 100%);
+  }
+
+  /* ── LAYOUT ── */
+  #app {
+    position: relative; z-index: 1;
+    display: flex;
+    min-height: 100vh;
+    gap: 0;
+  }
+
+  /* ── PLAYER (LEFT / CENTER) ── */
+  #player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .player-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+    opacity: 0.9;
+  }
+
+  /* Album Art */
+  #album-art-wrap {
+    width: 220px; height: 220px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.07);
+    margin-bottom: 24px;
+    position: relative;
+    flex-shrink: 0;
+    transition: box-shadow 0.8s ease;
+  }
+  #album-art {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: scale(1.0);
+  }
+  #album-art.switching {
+    opacity: 0; transform: scale(0.95);
+  }
+  .album-art-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+    background: linear-gradient(135deg, #1e1e3a, #2d2d5e);
+  }
+
+  /* Song Info */
+  #song-info {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  #song-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px; font-weight: 700;
+    margin-bottom: 5px;
+    transition: opacity 0.3s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #song-artist {
+    font-size: 14px; color: var(--text-dim);
+    transition: opacity 0.3s;
+  }
+
+  /* Like */
+  #like-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-dim); font-size: 18px;
+    display: flex; align-items: center; gap: 6px;
+    margin: 0 auto 20px;
+    transition: color 0.2s, transform 0.15s;
+    padding: 4px 8px; border-radius: 20px;
+  }
+  #like-btn:hover { color: #f472b6; transform: scale(1.08); }
+  #like-btn.liked { color: #f472b6; }
+  #like-count { font-size: 13px; color: var(--text-dim); }
+
+  /* Progress */
+  #progress-wrap {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  #progress-bar-bg {
+    width: 100%; height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  #progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    width: 0%;
+    position: relative;
+    transition: width 0.25s linear;
+  }
+  #progress-bar-fill::after {
+    content: '';
+    position: absolute; right: -5px; top: -4px;
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(167,139,250,0.8);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  #progress-bar-bg:hover #progress-bar-fill::after { opacity: 1; }
+  #time-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-dim);
+  }
+
+  /* Controls */
+  #controls {
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 28px;
+  }
+  .ctrl-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-dim); font-size: 20px;
+    transition: color 0.2s, transform 0.15s;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .ctrl-btn:hover { color: var(--text); transform: scale(1.1); }
+  #play-btn {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: white; font-size: 22px;
+    box-shadow: 0 4px 20px rgba(167,139,250,0.4);
+  }
+  #play-btn:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(167,139,250,0.55); }
+
+  /* Volume */
+  #volume-row {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; margin-bottom: 28px;
+  }
+  #volume-row span { font-size: 14px; color: var(--text-dim); }
+  #volume-slider {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; background: rgba(255,255,255,0.15);
+    border-radius: 2px; cursor: pointer;
+    outline: none;
+  }
+  #volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+
+  /* ── LYRICS ── */
+  #lyrics-section {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+    margin-bottom: 0;
+    max-height: 200px;
+    overflow: hidden;
+    position: relative;
+  }
+  .lyrics-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  #lyrics-list {
+    display: flex; flex-direction: column; gap: 0;
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .lyric-line {
+    padding: 5px 4px;
+    font-size: 14px; color: rgba(255,255,255,0.3);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.3s, font-size 0.3s, background 0.2s, padding 0.3s;
+    line-height: 1.5;
+  }
+  .lyric-line:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); }
+  .lyric-line.active {
+    color: white; font-size: 17px; font-weight: 600;
+    padding: 8px 8px;
+    background: rgba(167,139,250,0.1);
+  }
+  .lyric-line.prev1 { color: rgba(255,255,255,0.55); font-size: 14px; }
+  .lyric-line.next1 { color: rgba(255,255,255,0.45); font-size: 14px; }
+  #lyrics-fade-top, #lyrics-fade-bottom {
+    position: absolute; left: 0; right: 0; height: 40px; pointer-events: none; z-index: 2;
+  }
+  #lyrics-fade-top { top: 48px; background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent); }
+  #lyrics-fade-bottom { bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); border-radius: 0 0 var(--radius) var(--radius); }
+
+  /* ── PLAYLIST SIDEBAR ── */
+  #sidebar {
+    width: 260px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255,255,255,0.07);
+    padding: 32px 20px;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+    flex-shrink: 0;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+  .sidebar-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .playlist-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 4px;
+    position: relative;
+  }
+  .playlist-item:hover { background: var(--surface-hover); }
+  .playlist-item.active { background: rgba(167,139,250,0.15); }
+  .playlist-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 20%; bottom: 20%;
+    width: 3px; background: var(--accent);
+    border-radius: 2px;
+  }
+  .pi-num {
+    font-size: 12px; color: var(--text-dim); width: 18px; text-align: right;
+    flex-shrink: 0;
+  }
+  .playlist-item.active .pi-num { display: none; }
+  .pi-playing {
+    display: none; width: 18px; flex-shrink: 0;
+    align-items: center; justify-content: center;
+  }
+  .playlist-item.active .pi-playing {
+    display: flex;
+  }
+  .bar-anim { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .bar-anim span {
+    width: 3px; background: var(--accent);
+    border-radius: 1px; animation: barBounce 0.8s ease-in-out infinite alternate;
+  }
+  .bar-anim span:nth-child(2) { animation-delay: 0.2s; }
+  .bar-anim span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes barBounce {
+    from { height: 4px; } to { height: 14px; }
+  }
+  .pi-thumb {
+    width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+  }
+  .pi-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+  .pi-thumb-emoji {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    background: linear-gradient(135deg, #1e1e3a, #2d2d5e);
+    border-radius: 8px;
+  }
+  .pi-info { flex: 1; overflow: hidden; }
+  .pi-title {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .playlist-item.active .pi-title { color: var(--accent); }
+  .pi-artist { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .pi-duration { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+
+  /* ── PARTICLE CANVAS ── */
+  .particle { position: absolute; pointer-events: none; border-radius: 50%; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    #app { flex-direction: column; }
+    #sidebar {
+      width: 100%; border-left: none;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      max-height: 280px;
+    }
+    #album-art-wrap { width: 180px; height: 180px; }
+    #player { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div id="bg-scene">
+  <canvas id="bg-canvas"></canvas>
+  <div id="bg-overlay"></div>
+</div>
+
+<!-- App -->
+<div id="app">
+
+  <!-- PLAYER -->
+  <div id="player">
+    <div class="player-title">♫ My Playlist</div>
+
+    <div id="album-art-wrap">
+      <div class="album-art-placeholder" id="album-art-placeholder"></div>
+      <img id="album-art" src="" alt="Album Art" style="display:none" draggable="false">
+    </div>
+
+    <div id="song-info">
+      <div id="song-title">노래 제목</div>
+      <div id="song-artist">아티스트</div>
+    </div>
+
+    <button id="like-btn" onclick="toggleLike()">
+      <span id="like-icon">🤍</span>
+      <span id="like-count">0</span>
+    </button>
+
+    <div id="progress-wrap">
+      <div id="progress-bar-bg" onclick="seekTo(event)">
+        <div id="progress-bar-fill"></div>
+      </div>
+      <div id="time-row">
+        <span id="current-time">0:00</span>
+        <span id="total-time">0:00</span>
+      </div>
+    </div>
+
+    <div id="controls">
+      <button class="ctrl-btn" onclick="prevSong()" title="이전">⏮</button>
+      <button class="ctrl-btn" id="shuffle-btn" onclick="toggleShuffle()" title="셔플">🔀</button>
+      <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶</button>
+      <button class="ctrl-btn" id="repeat-btn" onclick="toggleRepeat()" title="반복">🔁</button>
+      <button class="ctrl-btn" onclick="nextSong()" title="다음">⏭</button>
+    </div>
+
+    <div id="volume-row">
+      <span>🔈</span>
+      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8" oninput="setVolume(this.value)">
+      <span>🔊</span>
+    </div>
+
+    <div id="lyrics-section">
+      <div class="lyrics-label">♪ Lyrics</div>
+      <div id="lyrics-fade-top"></div>
+      <div id="lyrics-list"></div>
+      <div id="lyrics-fade-bottom"></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR PLAYLIST -->
+  <div id="sidebar">
+    <div class="sidebar-label">📂 Playlist</div>
+    <div id="playlist-container"></div>
+  </div>
+
+</div>
+
+<audio id="audio-el"></audio>
+
+<script>
+// ============================================================
+//  SONGS DATA — 여기에 노래 정보를 입력하세요!
+// ============================================================
+const songs = [
+  {
+    title: " 겨우살이",
+    artist: "아이즈(IZ)",
+    emoji: "",
+    image: "images/1.png", // "images/night.jpg" 등 실제 이미지 경로 입력
+    audio: "music/1.mp3", // "music/night.mp3" 등 실제 오디오 경로 입력
+    duration: "4:13",
+    likes: 128,
+    theme: "night",   // night | spring | summer | rain | default
+    lyrics: [
+      
+    ]
+  },
+  {
+    title: " 기어이 또 (Still Here)",
+    artist: "ONEWE(원위)",
+    emoji: "🌸",
+    image: "images/2.png",
+    audio: "music/2.mp3",
+    duration: "3:39",
+    likes: 342,
+    theme: "spring",
+    lyrics: [
+      
+    ]
+  },
+  {
+    title: "날개",
+    artist: "다비",
+    emoji: "🌊",
+    image: "images/3.png",
+    audio: "music/3.mp3",
+    duration: "3:14",
+    likes: 256,
+    theme: "summer",
+    lyrics: [
+     
+    ]
+  },
+  {
+    title: "사랑은 사랑이",
+    artist: "빈티지 블루",
+    emoji: "🌧️",
+    image: "images/4.png",
+    audio: "music/4.mp3",
+    duration: "4:50",
+    likes: 189,
+    theme: "night",
+    lyrics: [
+     
+    ]
+  },
+     {
+    title: "사랑이라 했던 말 속에서",
+    artist: "can't be blue (캔트비블루)",
+    emoji: "🌧️",
+    image: "images/5.png",
+    audio: "music/5.mp3",
+    duration: "3:20",
+    likes: 189,
+    theme: "spring",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "손",
+    artist: "오월오일",
+    emoji: "🌧️",
+    image: "images/6.png",
+    audio: "music/6.mp3",
+    duration: "5:01",
+    likes: 189,
+    theme: "default",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "숲",
+    artist: "D82",
+    emoji: "🌧️",
+    image: "images/7.png",
+    audio: "music/7.mp3",
+    duration: "5:01",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "여름밤",
+    artist: "초묘",
+    emoji: "🌧️",
+    image: "images/8.png",
+    audio: "music/8.mp3",
+    duration: "2:53",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "외사랑",
+    artist: "김결",
+    emoji: "🌧️",
+    image: "images/9.png",
+    audio: "music/9.mp3",
+    duration: "3:16",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "잘됐으면 좋겠다",
+    artist: "산들",
+    emoji: "🌧️",
+    image: "images/10.png",
+    audio: "music/10.mp3",
+    duration: "3:40",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "파도",
+    artist: "ecru",
+    emoji: "🌧️",
+    image: "images/11.png",
+    audio: "music/11.mp3",
+    duration: "3:26",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "Black Rose",
+    artist: "The Rose",
+    emoji: "🌧️",
+    image: "images/13.png",
+    audio: "music/13.mp3",
+    duration: "4:19",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "폭죽과 풍선들",
+    artist: "검정치마",
+    emoji: "🌧️",
+    image: "images/12.png",
+    audio: "music/12.png",
+    duration: "3:21",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "Drama",
+    artist: "BLOO",
+    emoji: "🌧️",
+    image: "images/14.png",
+    audio: "music/14.mp3",
+    duration: "2:50",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "leave me alone",
+    artist: "Whiteusedsocks",
+    emoji: "🌧️",
+    image: "images/15.png",
+    audio: "music/15.mp3",
+    duration: "3:54",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "love virus",
+    artist: "롤러코스터",
+    emoji: "🌧️",
+    image: "images/16.png",
+    audio: "music/16.mp3",
+    duration: "4:31",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "Rialto",
+    artist: "Monday Morning 5.19",
+    emoji: "🌧️",
+    image: "images/17.png",
+    audio: "music/17.mp3",
+    duration: "4:52",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "numb",
+    artist: "유하",
+    emoji: "🌧️",
+    image: "images/18.png",
+    audio: "music/18.mp3",
+    duration: "3:36",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "hope",
+    artist: "mandy moore",
+    emoji: "🌧️",
+    image: "images/19.png",
+    audio: "music/19.mp3",
+    duration: "3:54",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "should be you",
+    artist: "캔트비블루",
+    emoji: "🌧️",
+    image: "images/20.png",
+    audio: "music/20.mp3",
+    duration: "3:02",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "Traffic Jam",
+    artist: "드래곤포니",
+    emoji: "🌧️",
+    image: "images/21.png",
+    audio: "music/21.mp3",
+    duration: "3:19",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  },  {
+    title: "With you",
+    artist: "엔분의일",
+    emoji: "🌧️",
+    image: "images/22.png",
+    audio: "music/22.mp3",
+    duration: "4:30",
+    likes: 189,
+    theme: "rain",
+    lyrics: [
+     
+    ]
+  }
+
+  
+  
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let currentIdx = 0;
+let isPlaying = false;
+let isShuffle = false;
+let isRepeat = false;
+let fakeTime = 0;
+let fakeTimer = null;
+let likedSongs = {};
+const audioEl = document.getElementById('audio-el');
+audioEl.volume = 0.8;
+
+// ============================================================
+//  BACKGROUND THEMES
+// ============================================================
+const themes = {
+  night: {
+    colors: ['#0d0d2b', '#1a1a4e'],
+    particles: { color: '#fff', type: 'star', count: 80 }
+  },
+  spring: {
+    colors: ['#1a0e1e', '#2d1a2e'],
+    particles: { color: '#ffb7d5', type: 'petal', count: 35 }
+  },
+  summer: {
+    colors: ['#001a33', '#003366'],
+    particles: { color: '#60c4ff', type: 'wave', count: 50 }
+  },
+  rain: {
+    colors: ['#0a0a14', '#141428'],
+    particles: { color: '#9bb8d3', type: 'rain', count: 90 }
+  },
+  default: {
+    colors: ['#0d0d1a', '#1a1a2e'],
+    particles: { color: '#a78bfa', type: 'star', count: 50 }
+  }
+};
+
+// Canvas particles
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let currentTheme = 'default';
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+  constructor(type) {
+    this.type = type;
+    this.reset(true);
+  }
+  reset(initial = false) {
+    this.x = Math.random() * canvas.width;
+    this.y = initial ? Math.random() * canvas.height : (this.type === 'rain' ? -10 : canvas.height + 10);
+    this.size = this.type === 'rain' ? Math.random() * 1 + 0.5 : Math.random() * 3 + 1;
+    this.speedX = this.type === 'rain' ? (Math.random() - 0.3) * 1.5 : (Math.random() - 0.5) * 0.3;
+    this.speedY = this.type === 'rain' ? Math.random() * 8 + 6 :
+                  this.type === 'petal' ? Math.random() * 1 + 0.3 :
+                  Math.random() * 0.4 - 0.5;
+    this.opacity = Math.random() * 0.7 + 0.3;
+    this.twinkle = Math.random() * Math.PI * 2;
+    this.twinkleSpeed = Math.random() * 0.05 + 0.01;
+    this.rotation = Math.random() * Math.PI * 2;
+    this.rotSpeed = (Math.random() - 0.5) * 0.03;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.twinkle += this.twinkleSpeed;
+    this.rotation += this.rotSpeed;
+    if (this.type === 'rain') {
+      if (this.y > canvas.height + 10 || this.x < -10 || this.x > canvas.width + 10) this.reset();
+    } else if (this.type === 'petal') {
+      if (this.y > canvas.height + 20) this.reset();
+      this.x += Math.sin(this.twinkle * 0.5) * 0.5;
+    } else {
+      if (this.y < -10) { this.y = canvas.height + 10; this.x = Math.random() * canvas.width; }
+      if (this.y > canvas.height + 10) { this.y = -10; }
+    }
+  }
+  draw(color) {
+    const alpha = this.opacity * (0.7 + 0.3 * Math.sin(this.twinkle));
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    if (this.type === 'rain') {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = this.size;
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x + this.speedX * 3, this.y + this.speedY * 3);
+      ctx.stroke();
+    } else if (this.type === 'petal') {
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, this.size * 2.5, this.size * 1.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      const s = this.size * (0.8 + 0.2 * Math.sin(this.twinkle));
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function initParticles(theme) {
+  const t = themes[theme] || themes.default;
+  particles = Array.from({ length: t.particles.count }, () => new Particle(t.particles.type));
+}
+
+function animateBg() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const t = themes[currentTheme] || themes.default;
+  particles.forEach(p => { p.update(); p.draw(t.particles.color); });
+  requestAnimationFrame(animateBg);
+}
+
+function setTheme(theme) {
+  if (theme === currentTheme) return;
+  currentTheme = theme;
+  const t = themes[theme] || themes.default;
+  document.getElementById('bg-scene').style.background =
+    `linear-gradient(160deg, ${t.colors[0]} 0%, ${t.colors[1]} 100%)`;
+  initParticles(theme);
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderPlaylist() {
+  const container = document.getElementById('playlist-container');
+  container.innerHTML = songs.map((s, i) => `
+    <div class="playlist-item ${i === currentIdx ? 'active' : ''}" onclick="playSong(${i})" id="pi-${i}">
+      <div class="pi-num">${i + 1}</div>
+      <div class="pi-playing">
+        <div class="bar-anim">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="pi-thumb">
+        ${s.image
+          ? `<img class="pi-thumb-img" src="${s.image}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          : ''}
+        <div class="pi-thumb-emoji" style="${s.image ? 'display:none' : ''}">${s.emoji}</div>
+      </div>
+      <div class="pi-info">
+        <div class="pi-title">${s.title}</div>
+        <div class="pi-artist">${s.artist}</div>
+      </div>
+      <div class="pi-duration">${s.duration}</div>
+    </div>
+  `).join('');
+}
+
+function updatePlayerUI() {
+  const s = songs[currentIdx];
+  document.getElementById('song-title').textContent = s.title;
+  document.getElementById('song-artist').textContent = s.artist;
+  document.getElementById('like-count').textContent = (likedSongs[currentIdx] ? s.likes + 1 : s.likes);
+  document.getElementById('like-icon').textContent = likedSongs[currentIdx] ? '❤️' : '🤍';
+  document.getElementById('like-btn').classList.toggle('liked', !!likedSongs[currentIdx]);
+  document.getElementById('total-time').textContent = s.duration;
+  document.getElementById('album-art-wrap').style.boxShadow =
+    themes[s.theme]
+      ? `0 8px 48px ${themes[s.theme].particles.color}44, 0 0 0 1px rgba(255,255,255,0.07)`
+      : '';
+
+  // Album art
+  const img = document.getElementById('album-art');
+  const placeholder = document.getElementById('album-art-placeholder');
+  img.classList.add('switching');
+  setTimeout(() => {
+    if (s.image) {
+      img.src = s.image;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+      placeholder.textContent = s.emoji;
+    }
+    img.classList.remove('switching');
+  }, 280);
+
+  setTheme(s.theme || 'default');
+  renderLyrics();
+
+  // Update playlist highlight
+  document.querySelectorAll('.playlist-item').forEach((el, i) => {
+    el.classList.toggle('active', i === currentIdx);
+  });
+  const active = document.getElementById(`pi-${currentIdx}`);
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderLyrics() {
+  const s = songs[currentIdx];
+  const list = document.getElementById('lyrics-list');
+  list.innerHTML = s.lyrics.map((l, i) =>
+    `<div class="lyric-line" id="ll-${i}" onclick="seekToLyric(${l.time})">${l.text}</div>`
+  ).join('');
+}
+
+function updateLyrics(time) {
+  const s = songs[currentIdx];
+  let activeIdx = 0;
+  for (let i = 0; i < s.lyrics.length; i++) {
+    if (time >= s.lyrics[i].time) activeIdx = i;
+  }
+  document.querySelectorAll('.lyric-line').forEach((el, i) => {
+    el.classList.remove('active', 'prev1', 'next1');
+    if (i === activeIdx) el.classList.add('active');
+    else if (i === activeIdx - 1) el.classList.add('prev1');
+    else if (i === activeIdx + 1) el.classList.add('next1');
+  });
+  // Scroll lyrics
+  const lineH = 42;
+  const offset = activeIdx * lineH - 60;
+  document.getElementById('lyrics-list').style.transform = `translateY(${-Math.max(0, offset)}px)`;
+}
+
+// ============================================================
+//  PLAYBACK
+// ============================================================
+function playSong(idx) {
+  currentIdx = idx;
+  fakeTime = 0;
+  isPlaying = true;
+  updatePlayerUI();
+  updatePlayBtn();
+  startFakeTimer();
+
+  // Real audio
+  const s = songs[idx];
+  if (s.audio) {
+    audioEl.src = s.audio;
+    audioEl.play().catch(() => {});
+    audioEl.onended = () => handleSongEnd();
+    audioEl.ontimeupdate = () => {
+      updateProgress(audioEl.currentTime, audioEl.duration || parseDuration(s.duration));
+      updateLyrics(audioEl.currentTime);
+    };
+  }
+}
+
+function parseDuration(str) {
+  const parts = str.split(':').map(Number);
+  return parts[0] * 60 + parts[1];
+}
+
+function togglePlay() {
+  if (audioEl.src && audioEl.src !== window.location.href) {
+    if (isPlaying) { audioEl.pause(); stopFakeTimer(); }
+    else { audioEl.play().catch(() => {}); startFakeTimer(); }
+  } else {
+    if (isPlaying) stopFakeTimer();
+    else startFakeTimer();
+  }
+  isPlaying = !isPlaying;
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  document.getElementById('play-btn').textContent = isPlaying ? '⏸' : '▶';
+}
+
+function startFakeTimer() {
+  stopFakeTimer();
+  const total = parseDuration(songs[currentIdx].duration);
+  fakeTimer = setInterval(() => {
+    if (!isPlaying) return;
+    fakeTime += 0.25;
+    if (fakeTime >= total) { fakeTime = 0; handleSongEnd(); return; }
+    if (!audioEl.src || audioEl.paused) {
+      updateProgress(fakeTime, total);
+      updateLyrics(fakeTime);
+    }
+  }, 250);
+}
+function stopFakeTimer() {
+  clearInterval(fakeTimer);
+}
+
+function handleSongEnd() {
+  if (isRepeat) { fakeTime = 0; if (audioEl.src) { audioEl.currentTime = 0; audioEl.play().catch(()=>{}); } return; }
+  if (isShuffle) { const next = Math.floor(Math.random() * songs.length); playSong(next); }
+  else { nextSong(); }
+}
+
+function nextSong() { playSong((currentIdx + 1) % songs.length); }
+function prevSong() { playSong((currentIdx - 1 + songs.length) % songs.length); }
+
+function updateProgress(cur, tot) {
+  const pct = tot > 0 ? (cur / tot) * 100 : 0;
+  document.getElementById('progress-bar-fill').style.width = pct + '%';
+  document.getElementById('current-time').textContent = formatTime(cur);
+  document.getElementById('total-time').textContent = formatTime(tot);
+}
+
+function formatTime(s) {
+  s = Math.floor(s);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+function seekTo(e) {
+  const bar = document.getElementById('progress-bar-bg');
+  const rect = bar.getBoundingClientRect();
+  const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+  const total = parseDuration(songs[currentIdx].duration);
+  fakeTime = pct * total;
+  if (audioEl.src) audioEl.currentTime = fakeTime;
+  updateProgress(fakeTime, total);
+  updateLyrics(fakeTime);
+}
+
+function seekToLyric(time) {
+  fakeTime = time;
+  if (audioEl.src) audioEl.currentTime = time;
+  updateLyrics(time);
+}
+
+function setVolume(v) { audioEl.volume = parseFloat(v); }
+
+function toggleShuffle() {
+  isShuffle = !isShuffle;
+  document.getElementById('shuffle-btn').style.color = isShuffle ? '#a78bfa' : '';
+}
+
+function toggleRepeat() {
+  isRepeat = !isRepeat;
+  document.getElementById('repeat-btn').style.color = isRepeat ? '#a78bfa' : '';
+  audioEl.loop = isRepeat;
+}
+
+function toggleLike() {
+  likedSongs[currentIdx] = !likedSongs[currentIdx];
+  const s = songs[currentIdx];
+  document.getElementById('like-count').textContent = likedSongs[currentIdx] ? s.likes + 1 : s.likes;
+  document.getElementById('like-icon').textContent = likedSongs[currentIdx] ? '❤️' : '🤍';
+  document.getElementById('like-btn').classList.toggle('liked', !!likedSongs[currentIdx]);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') nextSong();
+  if (e.code === 'ArrowLeft') prevSong();
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+initParticles('night');
+animateBg();
+renderPlaylist();
+playSong(0);
+</script>
+</body>
+</html>
