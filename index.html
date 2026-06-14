@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎵 My Playlist</title>
+<title>🎵 유하경의 플리</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
 
@@ -213,47 +213,70 @@
   }
 
   /* ── LYRICS ── */
-  #lyrics-section {
-    width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: var(--radius);
-    padding: 20px 16px;
-    margin-bottom: 0;
-    max-height: 200px;
-    overflow: hidden;
-    position: relative;
-  }
-  .lyrics-label {
-    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 16px; font-weight: 600;
-    display: flex; align-items: center; gap: 6px;
-  }
-  #lyrics-list {
-    display: flex; flex-direction: column; gap: 0;
-    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-  }
-  .lyric-line {
-    padding: 5px 4px;
-    font-size: 14px; color: rgba(255,255,255,0.3);
-    cursor: pointer;
-    border-radius: 6px;
-    transition: color 0.3s, font-size 0.3s, background 0.2s, padding 0.3s;
-    line-height: 1.5;
-  }
-  .lyric-line:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); }
-  .lyric-line.active {
-    color: white; font-size: 17px; font-weight: 600;
-    padding: 8px 8px;
-    background: rgba(167,139,250,0.1);
-  }
-  .lyric-line.prev1 { color: rgba(255,255,255,0.55); font-size: 14px; }
-  .lyric-line.next1 { color: rgba(255,255,255,0.45); font-size: 14px; }
-  #lyrics-fade-top, #lyrics-fade-bottom {
-    position: absolute; left: 0; right: 0; height: 40px; pointer-events: none; z-index: 2;
-  }
-  #lyrics-fade-top { top: 48px; background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent); }
-  #lyrics-fade-bottom { bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); border-radius: 0 0 var(--radius) var(--radius); }
+#lyrics-section {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.lyrics-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px; font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+  align-self: flex-start;
+}
+#lyrics-list {
+  width: 100%;
+  position: relative;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.lyric-line {
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255,255,255,0.0);
+  border-radius: 6px;
+  line-height: 1.6;
+  transition: opacity 0.6s ease, font-size 0.4s ease, color 0.5s ease;
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.lyric-line.active {
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  opacity: 1;
+  position: relative;
+  pointer-events: auto;
+}
+.lyric-line.prev1 {
+  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+  opacity: 0.5;
+  position: relative;
+  pointer-events: auto;
+}
+.lyric-line.next1 {
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  opacity: 0.4;
+  position: relative;
+  pointer-events: auto;
+}
 
   /* ── PLAYLIST SIDEBAR ── */
   #sidebar {
@@ -362,7 +385,7 @@
 
   <!-- PLAYER -->
   <div id="player">
-    <div class="player-title">♫ My Playlist</div>
+    <div class="player-title">♫ 5월 유하경 플리</div>
 
     <div id="album-art-wrap">
       <div class="album-art-placeholder" id="album-art-placeholder"></div>
@@ -404,7 +427,7 @@
     </div>
 
     <div id="lyrics-section">
-      <div class="lyrics-label">♪ Lyrics</div>
+      <div class="lyrics-label">♪ 가사</div>
       <div id="lyrics-fade-top"></div>
       <div id="lyrics-list"></div>
       <div id="lyrics-fade-bottom"></div>
@@ -413,7 +436,7 @@
 
   <!-- SIDEBAR PLAYLIST -->
   <div id="sidebar">
-    <div class="sidebar-label">📂 Playlist</div>
+    <div class="sidebar-label">📂 5월 유하경 플리</div>
     <div id="playlist-container"></div>
   </div>
 
@@ -436,10 +459,55 @@ const songs = [
     likes: 128,
     theme: "night",   // night | spring | summer | rain | default
     lyrics: [
-      
+       { time: 0,    text: "간주중" },
+       { time: 14,    text: "긴 어둠이 날 삼키면" },
+      { time: 20,    text: "내 눈은 멀어버리고" },
+      { time: 27,    text: "소리조차 낼 수 없어" },
+      { time: 34,   text: "난 어디에 있는 걸까" },
+      { time: 39,   text: "한 걸음걸음 내딛어봐도" },
+      { time: 42,   text: "제자리를 맴돌아" },
+      { time: 45,   text: "자신이 없어 갈 수가 없어" },
+      { time: 49,   text: "이젠 날아갈 수 없어" },
+      { time: 52,   text: "간주중" },
+      { time: 71,   text: "긴 겨울 속을 벗어 나고 싶어" },
+      { time: 75,   text: "잃어버린 나의 길을 찾아 " },
+      { time: 78,   text: "기억 속에 나를 뒤로한 채로 " },
+       { time: 83,   text: "I'll say yes " },
+       { "time": 85, "text": "영원히 여길 벗어나고 싶어" },
+      { "time": 88, "text": "너에게로 가는 빛을 찾아" },
+  { "time": 91, "text": "거울 속에 나를 위로한 채로" },
+  { "time": 96, "text": "I'll say yes" },
+  { "time": 111, "text": "긴 겨울이 날 삼키면" },
+  { "time": 118, "text": "내 몸은 얼어버리고" },
+  { "time": 124, "text": "뜨겁게 뱉은 한숨도" },
+  { "time": 131, "text": "차갑게 식어갈뿐야" },
+  { "time": 136, "text": "하루하루를 같은 하늘을" },
+  { "time": 139, "text": "매일 보고 있으면" },
+  { "time": 143, "text": "다른 게 없어 잡을 수 없어" },
+  { "time": 146, "text": "이젠 돌아갈 수 없어" },
+  { "time": 149, "text": "긴 겨울 속을 벗어나고 싶어" },
+  { "time": 153, "text": "잃어버린 나의 길을 찾아" },
+  { "time": 156, "text": "기억 속에 나를 뒤로한 채로" },
+  { "time": 161, "text": "I'll say yes" },
+  { "time": 162, "text": "영원히 여길 벗어나고 싶어" },
+  { "time": 166, "text": "너에게로 가는 빛을 찾아" },
+  { "time": 169, "text": "거울 속에 나를 위로한 채로" },
+  { "time": 174, "text": "I'll say yes" },
+  { "time": 176, "text": "(Once again)" },
+  { "time": 178, "text": "If you know why" },
+  { "time": 181, "text": "If you know how" },
+  { "time": 184, "text": "Show me the light" },
+  { "time": 191, "text": "영원히 눈을 감을 수는 없어" },
+  { "time": 195, "text": "나를 비춰주던 빛이 있어" },
+  { "time": 198, "text": "기억 속의 나를 뒤로 한 채로" },
+  { "time": 203, "text": "I'll say yes" },
+  { "time": 205, "text": "또 다른 어딘가로 가고 싶어" },
+  { "time": 208, "text": "나를 가둘 뿐인 이곳에서" },
+  { "time": 211, "text": "거울 속의 나를 위로한 채로" },
+  { "time": 216, "text": "I'll say yes" }
     ]
   },
-  {
+ {
     title: " 기어이 또 (Still Here)",
     artist: "ONEWE(원위)",
     emoji: "🌸",
@@ -449,7 +517,47 @@ const songs = [
     likes: 342,
     theme: "spring",
     lyrics: [
-      
+  
+  { time: 15, text: "기어이 또 눈물이 흘러" },
+  { time:18, text: "날리는 나무 그늘에서" },
+  { time: 25, text: "겨우 달래는 바람 소리" },
+  { time: 28, text: "뒤에 숨어 널 불러보는" },
+  { time: 35, text: "그렇게 매일 하루 끝엔 그때의 감정을 느끼다" },
+  { time: 43 , text: "또 후회하다 웃음이 나다" },
+  { time: 49, text: "다시 또 그렇게 잠기다" },
+  { time: 55, text: "아직 아닌가봐" },
+  { time: 58, text: "안되나 봐 나" },
+  { time: 61, text: "너 없는 이 빈자리가 믿어지지 않아" },
+  { time: 67, text: "채워지지 않아서" },
+  { time: 71, text: "다시 또 여기 서 있나 봐" },
+  { time: 75, text: "아직 너인가 봐" },
+  { time: 77, text: "그런가 봐 나" },
+  { time: 82, text: "아닌 척을 했었나 봐" },
+  { time: 85, text: "숨겨지지 않아" },
+  { time: 87, text: "내 모든 걸 아는 사람" },
+  { time: 91, text: "그렇게 낯설어진 네가 그리운가 봐" },
+  { time: 100, text: "언젠간 너 때문에 울 거란 그 말이 맞았어" },
+  { time: 106, text: "이제야 그땐 모르고 또 후회하고" },
+  { time: 114, text: "다시 또 널 그리워하고" },
+  { time: 120, text: "아직 아닌가 봐" },
+  { time: 122, text: "안되나 봐 나" },
+  { time: 126, text: "너 없는 이 빈자리가 믿어지지 않아" },
+  { time: 133, text: "채워지지 않아서" },
+  { time: 137, text: "다시 또 여기 서 있나 봐" },
+  { time: 142, text: "아름답게 사랑을 하던 지난날들을 그리다" },
+  { time: 152, text: "문득 떠오를 때면 그리운 마음 줄일게" },
+  { time: 163, text: "보고 싶은가 봐" },
+  { time: 165, text: "그런가 봐 나" },
+  { time: 169, text: "만신창이가 될까 봐" },
+  { time: 173, text: "뭔가 달라질까 무얼 할 수 있을까" },
+  { time: 178, text: "그러면 다시 돌아올까" },
+  { time: 183, text: "아직 너인가 봐" },
+  { time: 185, text: "그런가 봐 나" },
+  { time: 189, text: "아닌 척을 했었나 봐" },
+  { time: 192, text: "숨겨지지 않아" },
+  { time: 195, text: "내 모든 걸 아는 사람" },
+  { time: 199, text: "그렇게 낯설어진 네가 그리운가 봐" }
+
     ]
   },
   {
@@ -462,7 +570,39 @@ const songs = [
     likes: 256,
     theme: "summer",
     lyrics: [
-     
+     { time: 23, text: "그 두 눈엔 뭐가 담겼는지 모르겠어" },
+  { time: 28, text: "넌 여전히 손에서 Phone을 못 떼고 있어" },
+  { time: 33, text: "난 하루 종일 여기서 너만 기다렸는데" },
+  { time: 39, text: "What am I what am I to you" },
+  { time: 44, text: "내 시간 미래 꿈 헛된 네 사랑에" },
+  { time: 49, text: "전부 걸어서 이제 남은 게 없네" },
+  { time: 54, text: "어제의 사랑은 날 더 아프게 해" },
+  { time: 59, text: "What was I to you" },
+  { time: 64, text: "Baby 넌 내가 달아준 어여쁜 그 날개를 달고" },
+  { time: 70, text: "훨훨 참 멀리도 잘 날아가네" },
+  { time: 74, text: "달았던 네 향기와 목소리는 날 찔러 대" },
+  { time: 79, text: "My angel angel from hell yeah" },
+  { time: 85, text: "그러는 게 어딨어 Yeah" },
+  { time: 88, text: "우리 불행은 어디서 Damn" },
+  { time: 90, text: "난 등신같이 널 만나서" },
+  { time: 93, text: "더 병신이 되어버렸어" },
+  { time: 95, text: "넌 여신이 되었어" },
+  { time: 97, text: "아니 원래 예뻤어" },
+  { time: 101, text: "우리에게 주어진 사랑은 끝이 있을 거라고 생각하지 못했어" },
+  { time: 105, text: "널 사랑하는 게 나의 길이었고" },
+  { time: 110, text: "날 사랑하는 것보다 너는 일이었어" },
+  { time: 115, text: "난 너를 잘 안다고 생각했는데" },
+  { time: 120, text: "Who are u how could u" },
+  { time: 124, text: "Baby 넌 내가 달아준 어여쁜 그 날개를 달고" },
+  { time: 131, text: "훨훨 참 멀리도 잘 날아가네" },
+  { time: 136, text: "달았던 네 향기와 목소리는 날 찔러 대" },
+  { time: 141, text: "My angel angel from heaven yeah" },
+  { time: 148, text: "나도 잘 알아 원래 너의 것이라는 걸" },
+  { time: 156, text: "네 세상에 내가 있어 행복했다고 해줘" },
+  { time: 165, text: "Baby 넌 내가 원하지 않았던 그 날개를 뻗고" },
+  { time: 172, text: "더 멀리 날아가 행복하길 바라" },
+  { time: 177, text: "언젠가 나도 너와 같은 곳에 닿을까" },
+  { time: 182, text: "My angel angel my star" }
     ]
   },
   {
@@ -475,7 +615,29 @@ const songs = [
     likes: 189,
     theme: "night",
     lyrics: [
-     
+     { time: 29, text: "그랬었던 건가요 나는 아니였나요" },
+  { time: 36, text: "정말 정말" },
+  { time: 43, text: "설레게 한 칭찬도 특별했던 배려도" },
+  { time: 49, text: "다만 다만 오해였나요" },
+  { time: 58, text: "그대 하나에 내 두눈 이미 멀었는데" },
+  { time: 69, text: "기다리는 사람 그댄 따로 있단 그 말" },
+  { time: 80, text: "헌데 왜 잘해준거죠 왜 그랬던거죠 왜 그동안" },
+  { time: 95, text: "사랑도 아닌데 사랑인것처럼" },
+  { time: 122, text: "그런것도 모르고 눈치 없이 모르고" },
+  { time: 128, text: "나만 나만" },
+  { time: 136, text: "뒤에 숨긴 꽃다발 사랑한단 그말도" },
+  { time: 142, text: "차마 차마 줄수 없었죠" },
+  { time: 151, text: "손끝만 닿아도 난 숨 멎을듯 벅찼는데" },
+  { time: 162, text: "한번도 사랑을 느껴본적 없던 그말" },
+  { time: 172, text: "헌데 왜 잘해준거죠 왜 그랬던 거죠 왜 그동안" },
+  { time: 186, text: "나같은 사랑 그대도 아파서" },
+  { time: 192, text: "그대도 지쳐서 날 기댄걸" },
+  { time: 201, text: "슬픔이 슬픔을 기대고 살듯이" },
+  { time: 214, text: "죽어도 아니겠죠 난 아닐꺼야" },
+  { time: 224, text: "난 아닌가요 그대여" },
+  { time: 241, text: "그 사람보다 더 사랑할텐데 더 행복할텐데 내곁에서" },
+  { time: 256, text: "사랑은 사랑이 지워야 하니까" },
+  { time: 268, text: "영원히" }
     ]
   },
      {
@@ -488,7 +650,48 @@ const songs = [
     likes: 189,
     theme: "spring",
     lyrics: [
-     
+     { time: 9, text: "그래, 너의 말엔 느껴지지가 않는 떨리는" },
+  { time: 15, text: "표정이 내겐 숨기는 것만으로 벅차" },
+  { time: 19.5, text: "Hey, baby, 끝까지 넌 한결같았으니까" },
+  { time: 24, text: "늘 바뀌는 건 나니까 익숙한 기분이 들더라고" },
+  { time: 31, text: "달라졌던 적이 없어" },
+  { time: 33, text: "닿기도 전에 환히 웃어" },
+  { time: 35, text: "기쁜 건지 막 또 눈물이 흘러" },
+  { time: 38, text: "멈춰, 그게 무슨 말?" },
+  { time: 40.5, text: "아주 더 멀리, 더 멀리" },
+  { time: 43, text: "넌 이제 떠나는 거야, 저 멀리" },
+  { time: 45.5, text: "누가 널 찾더라도 모른다는 말 밖에" },
+  { time: 50, text: "사랑이라 했던 말 속에서" },
+  { time: 55, text: "사랑이 정말 전부 다겠어" },
+  { time: 60, text: "말해줄게 다시 몇 번이고 다신" },
+  { time: 62.5, text: "우리가 못 보게 되더라도" },
+  { time: 65, text: "너를 내 품에 안게 되면" },
+  { time: 68, text: "내 가슴에 칼을 꽂아줘" },
+  { time: 79, text: "그래, 너의 몸엔 느껴지지가 않는 감정이" },
+  { time: 85, text: "언제나 내겐 항상 우선이었던 것 같아" },
+  { time: 90, text: "왜 일그러지는 걸까? 차라리 더 해줘 거짓말을" },
+  { time: 95, text: "못 할 거 알지만, 안 된다는 걸 다 알지만" },
+  { time: 100, text: "점점 무너져 가고 있어" },
+  { time: 103, text: "닿기도 전에 환히 웃어" },
+  { time: 105, text: "한 번만 웃어봐 줄 순 없겠니?" },
+  { time: 107.5, text: "Smile for me, baby" },
+  { time: 110, text: "아주 더 멀리, 더 멀리" },
+  { time: 112.5, text: "넌 이제 떠나는 거야, 저 멀리" },
+  { time: 115, text: "누가 널 찾더라도 모르겠다는 그 말 밖에" },
+  { time: 119.5, text: "사랑이라 했던 말 속에서" },
+  { time: 125, text: "사랑이 정말 전부 다겠어" },
+  { time: 130, text: "말해줄게 다시 몇 번이고 다신" },
+  { time: 132, text: "우리가 못 보게 되더라도" },
+  { time: 135, text: "너를 내 품에 안게 되면" },
+  { time: 137, text: "내 가슴에 칼을 꽂아줘" },
+  { time: 160, text: "사랑이라 했던 말 속에서" },
+  { time: 165, text: "사랑이 정말 전부 다겠어" },
+  { time: 170, text: "말해줄게 다시 몇 번이고 다신" },
+  { time: 172, text: "우리가 못 보게 되더라도" },
+  { time: 175, text: "너를 내 품에 안게 되면" },
+  { time: 177, text: "내 가슴에 칼을 꽂아줘" },
+  { time: 194, text: "너를 내 품에 안게 되면" },
+  { time: 197, text: "내 가슴에 칼을 꽂아줘" }
     ]
   },  {
     title: "손",
@@ -496,11 +699,49 @@ const songs = [
     emoji: "🌧️",
     image: "images/6.png",
     audio: "music/6.mp3",
-    duration: "5:01",
+    duration: "3:52",
     likes: 189,
     theme: "default",
     lyrics: [
-     
+     { time: 25, text: "평소 너처럼" },
+  { time: 28, text: "너만 할 수 있는" },
+  { time: 31, text: "따스함을 내게 전해줘" },
+  { time: 33, text: "따스함을 내게 전해줘" },
+  { time: 37, text: "늘 한결같이" },
+  { time: 40, text: "너만 할 수 있는" },
+  { time: 44, text: "지친 나를 다독여줘" },
+  { time: 46, text: "지친 나를 다독여줘" },
+  { time: 49.5, text: "내게 손 내밀어 줘" },
+  { time: 52, text: "서로를 위해 믿어줘" },
+  { time: 56, text: "내가 필요할 때 내 곁에 있어줘" },
+  { time: 62, text: "네게 손 내밀었던" },
+  { time: 65, text: "서로를 위해 믿었던" },
+  { time: 68, text: "주저앉은 우리를 위해" },
+  { time: 76, text: "손 내밀어" },
+  { time: 78, text: "손잡아 줘" },
+  { time: 82, text: "손 내밀어" },
+  { time: 84, text: "놓치지 않게" },
+  { time: 88, text: "손 내밀어" },
+  { time: 91, text: "손잡아 줘" },
+  { time: 94, text: "손 내밀어" },
+  { time: 97, text: "지치지 않게" },
+  { time: 111, text: "부드러운 손으로" },
+  { time: 117.5, text: "내 눈물 닦아줘" },
+  { time: 124, text: "넘어진 날 일으켜" },
+  { time: 130, text: "비틀거리는 날 세워줘" },
+  { time: 141, text: "손 내밀어" },
+  { time: 143, text: "손잡아 줘" },
+  { time: 147, text: "손 내밀어" },
+  { time: 149, text: "놓치지 않게" },
+  { time: 153, text: "손 내밀어" },
+  { time: 156, text: "손잡아 줘" },
+  { time: 159, text: "손 내밀어" },
+  { time: 162, text: "지치지 않게" },
+  { time: 176.5, text: "언제 어디서나" },
+  { time: 184, text: "날 좀 잡아줘" },
+  { time: 189, text: "주저앉은 나에게" },
+  { time:200, text: "한줄기 빛이 돼" },
+  { time: 212, text: "한줄기 빛이 돼" }
     ]
   },  {
     title: "숲",
@@ -508,11 +749,63 @@ const songs = [
     emoji: "🌧️",
     image: "images/7.png",
     audio: "music/7.mp3",
-    duration: "5:01",
+    duration: "4:37",
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+   { time: 40, text: "바람에 꺾이듯" },
+  { time: 45, text: "우리는 얇았고" },
+  { time: 50, text: "길을 잃었다" },
+  { time: 55, text: "난 어디쯤 와있나" },
+  { time: 59, text: "슬픔에 가까운" },
+  { time: 64, text: "과거는 어딘가" },
+  { time: 69, text: "숲이 되었다" },
+  { time: 74, text: "하염없이 서있다" },
+  { time: 78, text: "Dont think about a pain" },
+  { time: 83, text: "네 손을 잡을때" },
+  { time: 87.5, text: "내맘은 숨을쉬어" },
+  { time: 90, text: "내 눈은 춤을춰" },
+  { time: 92.5, text: "그리고 웃는 너" },
+  { time: 97, text: "Thinkin about you now" },
+  { time: 102, text: "더크게 부를게" },
+  { time: 107, text: "닿을수있도록" },
+  { time: 109, text: "잠시뿐이라도" },
+  { time: 112, text: "들리지않는" },
+  { time: 116.5, text: "숲이여도 좋아" },
+  { time: 120, text: "우 워어 우 워어" },
+  { time: 125, text: "우 워어 우 워어" },
+  { time: 130, text: "우 워어 우 워어오" },
+  { time: 136, text: "캄캄한 미래가" },
+  { time: 141, text: "두려워 숨어도" },
+  { time: 145.5, text: "가지사이로" },
+  { time: 151, text: "찬 바람은 불어와" },
+  { time: 156, text: "언젠가 옅어질" },
+  { time: 160, text: "지금속 기억을" },
+  { time: 165, text: "잊지 않을게" },
+  { time: 170, text: "절대 놓지 않을래" },
+  { time: 174, text: "Dont think about a pain" },
+  { time: 179, text: "네 손을 잡을때" },
+  { time: 184, text: "내맘은 숨을쉬어" },
+  { time: 186, text: "내 눈은 춤을춰" },
+  { time: 188.5, text: "그리고 웃는 너" },
+  { time: 193, text: "Thinkin about you now" },
+  { time: 198, text: "더크게 부를게" },
+  { time: 203, text: "닿을수있도록" },
+  { time: 205, text: "잠시뿐이라도" },
+  { time: 208, text: "들리지않는" },
+  { time: 212, text: "숲이여도 좋아" },
+  { time: 216, text: "우 워어 우 워어" },
+  { time: 221, text: "우 워어 우 워어" },
+  { time: 225.5, text: "우 워어 우 워어오" },
+  { time: 235.5, text: "우 워어 우 워어" },
+  { time: 240, text: "우 워어 우 워어" },
+  { time: 244.5, text: "우 워어 우 워어오" },
+  { time: 251, text: "Thinkin about you now" },
+  { time: 255.5, text: "더크게 부를게" },
+  { time: 260, text: "닿을수있도록" },
+  { time: 263, text: "잠시뿐이라도" },
+  { time: 265.5, text: "들리지않는" },
+  { time: 270, text: "숲이여도 좋아" }
     ]
   },  {
     title: "여름밤",
@@ -524,7 +817,32 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+     { time: 1, text: "한없이 뒤척이다 일어나 잠든 문을 열어" },
+  { time: 8, text: "발끝만 보고 걷다가 웃었어" },
+  { time: 15, text: "변한 건 하나 없는데 괜히 난 마음이 들떠" },
+  { time: 22, text: "너에게 갈 수 있을 것만 같아서" },
+  { time: 28, text: "내가 너를 떠나 보내야 한대도" },
+  { time: 32, text: "너는 이해할 수 있다고" },
+  { time: 35, text: "애써 네 속마음 감추려 떨리던 말들이" },
+  { time: 42, text: "계속 망설이고 헤매던 날들을" },
+  { time: 46, text: "더는 견뎌낼 수 없다고" },
+  { time: 49, text: "다시 잠 못 드는 이 밤을 서성이고 있어" },
+  { time: 85, text: "말없이 돌아서다 멈춰서 잠시 뒤를 봤어" },
+  { time: 92.5, text: "별빛만 반짝이고 넌 없었어" },
+  { time: 99.5, text: "변한 건 하나 없는데 괜히 난 마음이 들떠" },
+  { time: 107, text: "너에게 갈 수 있을 것만 같아서" },
+  { time: 112, text: "내가 너를 떠나 보내야 한대도" },
+  { time: 116, text: "너는 이해할 수 있다고" },
+  { time: 119, text: "애써 네 속마음 감추려 떨리던 말들이" },
+  { time: 126, text: "계속 망설이고 헤매던 날들을" },
+  { time: 130, text: "더는 견뎌낼 수 없다고" },
+  { time: 133, text: "다시 잠 못 드는 이 밤을 서성이고 있어" },
+  { time: 140.5, text: "내가 너를 떠나 보내야 한대도" },
+  { time: 144, text: "너는 이해할 수 있다고" },
+  { time: 148, text: "애써 네 속마음 감추려 떨리던 말들이" },
+  { time: 155, text: "계속 망설이고 헤매던 날들을" },
+  { time: 159, text: "더는 견뎌낼 수 없다고" },
+  { time: 161.5, text: "다시 잠 못 드는 이 밤을 서성이고 있어" }
     ]
   },  {
     title: "외사랑",
@@ -536,7 +854,35 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+     { time: 4, text: "그래요 방금 한말은 또 나만 아는 얘기" },
+  { time: 10, text: "나만 기억하는 일 나만 상처받는 일" },
+  { time: 17, text: "그래요 그대가 무슨 잘못이 있겠어요" },
+  { time: 23, text: "내가 사랑인지라 떼를 쓰는 건데요" },
+  { time: 30, text: "그댄 아무렇지 않게 바라보지만" },
+  { time: 37, text: "그냥 그게 그냥 그게" },
+  { time: 44, text: "그댄 아무렇지 않게 얘기하지만" },
+  { time: 50, text: "그냥 그게 그냥 그게" },
+  { time: 58, text: "사람이 누군가를 사랑할 때" },
+  { time: 64, text: "비록 그대 것은 안 보일 때" },
+  { time: 67, text: "우리 사랑이라 하면 안 될까요" },
+  { time: 73, text: "나의 마음이 너무 사랑이라" },
+  { time: 77, text: "그대 사랑까지 내가 하면" },
+  { time: 80, text: "그걸 사랑이라 하면 안 될까요" },
+  { time: 87, text: "마음이 그 마음이 너무 쉽지 않네요" },
+  { time: 93.8, text: "분명 내 것일 텐데 그대 것이 아닌데" },
+  { time: 101, text: "괜시리 오늘은 그냥 그댈 미워할게요" },
+  { time: 107, text: "아니 싫어할게요 아니 탓만 할게요" },
+  { time: 114, text: "그댄 아무렇지 않게 바라보지만" },
+  { time: 120, text: "그냥 그게 그냥 그게" },
+  { time: 127, text: "그댄 아무렇지 않게 얘기하지만" },
+  { time: 133, text: "그냥 그게 그냥 그게" },
+  { time: 139, text: "사람이 누군가를 사랑할 때" },
+  { time: 143, text: "비록 그대 것은 안 보일 때" },
+  { time: 147, text: "우리 사랑이라 하면 안 될까요" },
+  { time: 152.8, text: "나의 마음이 너무 사랑이라" },
+  { time: 157, text: "그대 사랑까지 내가 하면" },
+  { time: 160, text: "그걸 사랑이라 하면 안 될까요" },
+  { time: 186.8, text: "그걸 사랑이라 하면 안 될까요" }
     ]
   },  {
     title: "잘됐으면 좋겠다",
@@ -548,7 +894,54 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+     { time: 17, text: "이 노랜 너에게만 부를 노래" },
+  { time: 22, text: "너만 상상하며 만든 노래" },
+  { time: 26.8, text: "너를 떠올리며 나 망설임도 없이" },
+  { time: 31, text: "쭉 써 내려간 노래야" },
+  { time: 34, text: "이 노랠 듣는 너의 마음이" },
+  { time: 39, text: "마냥 기쁨 만이기를 바래" },
+  { time: 43, text: "지극히 순수한 행복이기를 바래 지금부터" },
+  { time: 50, text: "잘 됐으면 좋겠다" },
+  { time: 54, text: "우리 이뤄지면 정말 좋겠다" },
+  { time: 58.5, text: "서로 위로가 필요할 때면" },
+  { time: 61.7, text: "잔잔한 노래가 되어 주는 연인들처럼" },
+  { time: 67, text: "혼자는 이제 안녕" },
+  { time: 70, text: "새로운 사랑이 찾아온 거야" },
+  { time: 74, text: "벅차오르는 기분이 좋아" },
+  { time: 78, text: "그래, 나는 정말 네가 좋아" },
+  { time: 81.7, text: "잘 됐으면 좋겠다" },
+  { time: 83.6, text: "내 말이 조금은 놀랍겠지만" },
+  { time: 89, text: "갑자기라 뜬금없겠지만" },
+  { time: 93, text: "열 번 스무 번을 고민 고민해 봐도" },
+  { time: 97, text: "고백하는 게 답인 거야" },
+  { time: 100, text: "Girl, do you know this song is only for you?" },
+  { time: 105, text: "그래, 이 노랜 너의 노래야" },
+  { time: 109, text: "정말 열심히 쓴 널 위한 세레나데" },
+  { time: 114, text: "자, 들어 봐" },
+  { time: 116, text: "잘 됐으면 좋겠다" },
+  { time: 120, text: "우리 이뤄지면 정말 좋겠다" },
+  { time: 124, text: "서로 위로가 필요할 때면" },
+  { time: 128, text: "잔잔한 노래가 되어 주는 연인들처럼" },
+  { time: 133, text: "혼자는 이제 안녕" },
+  { time: 136, text: "새로운 사랑이 찾아온 거야" },
+  { time: 141, text: "벅차오르는 기분이 좋아" },
+  { time: 144, text: "그래, 나는 정말 네가 좋아" },
+  { time: 149, text: "어젯밤 꿈처럼 너와 나 둘이" },
+  { time: 155, text: "손을 잡고 걸으며 딴따단 딴딴따단" },
+  { time: 161, text: "분홍 길을 걸으면 좋겠다" },
+  { time: 166, text: "나 널 좋아해" },
+  { time: 169, text: "같이 사랑을 시작해 보자" },
+  { time: 173, text: "나와 함께 걷는 거야 또 뛰는 거야" },
+  { time: 178, text: "그것보다 좋은 건 없을 거야" },
+  { time: 182, text: "잘 됐으면 좋겠다" },
+  { time: 186, text: "우리 이뤄지면 정말 좋겠다" },
+  { time: 190, text: "서로 위로가 필요할 때면" },
+  { time: 194, text: "잔잔한 노래가 되어 주는 연인들처럼" },
+  { time: 199, text: "혼자는 이제 안녕" },
+  { time: 203, text: "새로운 사랑이 찾아온 거야" },
+  { time: 207, text: "벅차오르는 기분이 좋아" },
+  { time: 211, text: "그래, 나는 정말 네가 좋아" },
+  { time: 214, text: "잘 됐으면 좋겠다" }
     ]
   },  {
     title: "파도",
@@ -560,7 +953,44 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+    { time: 17, text: "갈색 눈동자" },
+  { time: 19.5, text: "짙은 눈썹에" },
+  { time: 22.5, text: "차가운 너의 말투" },
+  { time: 25.5, text: "날 미치게 만들어서" },
+  { time: 29.5, text: "불어오는 바람" },
+  { time: 32.5, text: "그 속에 담겨진" },
+  { time: 35.5, text: "그대의 향기들이 나를 스쳐가" },
+  { time: 41, text: "I don't know what to say" },
+  { time: 44, text: "말로는 표현이" },
+  { time: 47, text: "안되는 그런 느낌 있잖아" },
+  { time: 53, text: "잔잔한 바다에" },
+  { time: 57, text: "큰 파도를 만들어" },
+  { time: 59, text: "날 휩쓸리게 만드는 그대" },
+  { time: 61, text: "I want to swim in the sea in your eyes" },
+  { time: 72, text: "그대의 눈 속에서 휩쓸리고 있어" },
+  { time: 78, text: "I want to swim in the sea in your eyes" },
+  { time: 84, text: "I fall in for you for you for you" },
+  { time: 91, text: "소리도 없이 내게" },
+  { time: 94, text: "찾아온 파도와" },
+  { time: 97.2, text: "알 수 없는 이곳은" },
+  { time: 100, text: "도저히 모르겠어서" },
+  { time: 103, text: "깊숙한 바다에서" },
+  { time: 106, text: "홀로 남겨진 나" },
+  { time: 109.5, text: "아무리 헤엄쳐봐도 똑같은걸" },
+  { time: 115, text: "I don't know what to do" },
+  { time: 118, text: "생각을 해봐도" },
+  { time: 121, text: "다른 방법이 없는 거잖아" },
+  { time: 127, text: "그대 맘속에서" },
+  { time: 130, text: "영원히 잠긴 난" },
+  { time: 133, text: "그냥 이렇게 있으면 될까" },
+  { time: 140, text: "I want to swim in the sea in your eyes" },
+  { time: 145.7, text: "그대의 눈 속에서 휩쓸리고 있어" },
+  { time: 152, text: "I want to swim in the sea in your eyes" },
+  { time: 158, text: "I fall in for you for you for you" },
+  { time: 164, text: "I want to swim in the sea in your eyes" },
+  { time: 170, text: "그대의 눈 속에서 휩쓸리고 있어" },
+  { time: 177, text: "I want to swim in the sea in your eyes" },
+  { time: 182, text: "I fall in for you for you for you" }
     ]
   },  {
     title: "Black Rose",
@@ -572,7 +1002,42 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 30, text: "Hello, I'm calling" },
+  { time: 37, text: "Follow me under the rain" },
+  { time: 44, text: "We're falling" },
+  { time: 45, text: "Through the painful thorns" },
+  { time: 50, text: "Again and again" },
+  { time: 58.5, text: "I'm drowning below the shallow water" },
+  { time: 65.5, text: "But you take my hand" },
+  { time: 69, text: "And pull me aside" },
+  { time: 73, text: "I'm thank you always" },
+  { time: 75, text: "That you've saved me from tears" },
+  { time: 81.5, text: "Again and again" },
+  { time: 100.5, text: "나의 아픔은" },
+  { time: 108, text: "너의 상처가 되어" },
+  { time: 114, text: "빨갛던 장미 꽃잎이" },
+  { time: 120, text: "검게 물들어요" },
+  { time: 129, text: "마지막 꽃잎이 떨어져도" },
+  { time: 136, text: "언제까지나 널 지켜줄게" },
+  { time: 143, text: "날 살게해준 너의 그 한마디" },
+  { time: 151.5, text: "정말 고마워요" },
+  { time: 181.5, text: "Tell me it's okay" },
+  { time: 186, text: "Don't be afraid" },
+  { time: 190, text: "Nobody can take away, take away" },
+  { time: 193, text: "Love is the way" },
+  { time: 196, text: "Tell me it's okay" },
+  { time: 200, text: "Don't be afraid" },
+  { time: 204, text: "Nobody can take away, take away" },
+  { time: 207, text: "Love is the way" },
+  { time: 210, text: "Don't you be afraid" },
+  { time: 217, text: "Don't you be afraid" },
+  { time: 221, text: "Don't be afraid" },
+  { time: 225, text: "Tell me it's okay" },
+  { time: 229, text: "Don't be afraid" },
+  { time: 232, text: "Nobody can take away, take away" },
+  { time: 235, text: "Love is the way" },
+  { time: 242, text: "Hello 조금 멀어진" },
+  { time: 249, text: "우리 걱정 말아요" }
     ]
   },  {
     title: "폭죽과 풍선들",
@@ -584,7 +1049,26 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+     { time: 26, text: "이대로 난 이대로 아무것도 안 바꿀래" },
+  { time: 38, text: "아쉬운 것들도 그대로 다 두고서" },
+  { time: 46, text: "우리 처음 만난 그때처럼" },
+  { time: 51.5, text: "그대로 넌 그대로 내 옆에 남을 걸 난 알아" },
+  { time: 64, text: "마지막 폭죽이 터지는 그날에도" },
+  { time: 71, text: "별로 슬퍼할 것 같진 않아" },
+  { time: 76.5, text: "oh baby 내 노래가 멈춘 뒤엔 모두 떠나가고" },
+  { time: 83, text: "또 너와 나 둘만 남겠지" },
+  { time: 88.5, text: "oh look at ‘em go baby" },
+  { time: 92, text: "oh look at ‘em go" },
+  { time: 94, text: "oh look at ‘em go baby go" },
+  { time: 123, text: "항상 나는 너무 쉽게 버림받곤 해" },
+  { time: 128, text: "잠시 손만 놔도 날아가 버리고" },
+  { time: 134, text: "하지만 괜찮아 새로울 것도 없잖아" },
+  { time: 140, text: "it’s you and me and no one else" },
+  { time: 145, text: "oh baby 내 노래가 멈춘 뒤엔 모두 떠나가고" },
+  { time: 152, text: "또 너와 나 둘만 남겠지" },
+  { time: 157, text: "oh look at ‘em go baby" },
+  { time: 160, text: "oh look at ‘em go" },
+  { time: 163, text: "oh look at ‘em go baby go" }
     ]
   },  {
     title: "Drama",
@@ -596,7 +1080,60 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+     { time: 18, text: "우리를 돌아봐" },
+  { time: 20, text: "우리는 drama야" },
+  { time: 23, text: "계속해 돌아가" },
+  { time: 24.5, text: "내 손을 놓지 말아" },
+  { time: 26.5, text: "나는 싫어 마지막" },
+  { time: 28, text: "안아주고 가지 마" },
+  { time: 30, text: "집에 간다 하지 마" },
+  { time: 32.8, text: "우리는 drama야" },
+  { time: 40, text: "우리는 drama야" },
+  { time: 48, text: "우리는 drama야" },
+  { time: 50.3, text: "너와 나는 let's go drive" },
+  { time: 53, text: "우리 오늘 밤엔 짠" },
+  { time: 54.4, text: "끝내지 않아 이 밤" },
+  { time: 56.7, text: "너와 붙어있을 거야" },
+  { time: 58, text: "나는 매일 니 품 안에" },
+  { time: 60, text: "안길래, 어떻든 간에" },
+  { time: 62, text: "너도 매일 내 품 안에" },
+  { time: 64, text: "매일 아침 안겨 줄래?" },
+  { time: 66, text: "네가 만약 센치해" },
+  { time: 68, text: "그럼 일도 내칠 게" },
+  { time: 70, text: "네가 만약 새침하면" },
+  { time: 72, text: "내가 다 풀어줄게" },
+  { time: 74, text: "우리는 내 집 앞에" },
+  { time: 76, text: "네 입술은 내 앞에" },
+  { time: 78, text: "오늘 밤을 시작해" },
+  { time: 80, text: "우리를" },
+  { time: 82, text: "우리를 돌아봐" },
+  { time: 84, text: "우리는 drama야" },
+  { time: 86, text: "계속해 돌아가" },
+  { time: 88.4, text: "내 손을 놓지 말아" },
+  { time: 91, text: "나는 싫어 마지막" },
+  { time: 92.4, text: "안아주고 가지 마" },
+  { time: 94.6, text: "집에 간다 하지 마" },
+  { time: 96, text: "우리는 drama야" },
+  { time: 104, text: "우리는 drama야" },
+  { time: 112, text: "우리는 drama야" },
+  { time: 114.8, text: "그대로 있어 줄래?" },
+  { time: 116, text: "내가 이뻐 해줄게" },
+  { time: 118, text: "머리를 내게 기대" },
+  { time: 120, text: "내가 있어 네 뒤엔" },
+  { time: 122, text: "이 시간이 멈추기를" },
+  { time: 124, text: "내 안에서 울질 않기를" },
+  { time: 127, text: "불러줄래, 나의 이름?" },
+  { time: 129, text: "우리를" },
+  { time: 130, text: "우리를 돌아봐" },
+  { time: 132, text: "우리는 drama야" },
+  { time: 134, text: "계속해 돌아가" },
+  { time: 136, text: "내 손을 놓지 말아" },
+  { time: 138, text: "나는 싫어 마지막" },
+  { time: 140, text: "안아주고 가지 마" },
+  { time: 142, text: "집에 간다 하지 마" },
+  { time: 144, text: "우리는 drama야" },
+  { time: 153, text: "우리는 drama야" },
+  { time: 160, text: "우리는 drama야" }
     ]
   },  {
     title: "leave me alone",
@@ -608,7 +1145,30 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 24, text: "우리 사는 동안에" },
+  { time: 28.8, text: "하고픈 대로 할 순 없었고" },
+  { time: 36, text: "다 받은 후 에야" },
+  { time: 40, text: "아무 관심 없는 듯" },
+  { time: 43, text: "모두 떠나가겠지" },
+  { time: 47.8, text: "Won't you be mind" },
+  { time: 52, text: "No matter what happens around" },
+  { time: 59, text: "Never be mind ya" },
+  { time: 63, text: "So what could we do? yeah" },
+  { time: 71, text: "Leave me alone" },
+  { time: 74, text: "There's a bright shine when I feel" },
+  { time: 81, text: "Please leave me alone" },
+  { time: 85.8, text: "And they never ever can see us" },
+  { time: 116.7, text: "누군가에겐 친절한 웃음도 껍데기뿐이었고" },
+  { time: 129, text: "너희들에게 미움과 혐오는" },
+  { time: 135, text: "달콤한 것 들이야" },
+  { time: 140, text: "Won't you be mind" },
+  { time: 144, text: "No matter what happens around" },
+  { time: 152, text: "Never be mind ya" },
+  { time: 156, text: "So what could we do? yeah" },
+  { time: 163.6, text: "Leave me alone" },
+  { time: 167, text: "There's a bright shine when I feel" },
+  { time: 174, text: "Please leave me alone" },
+  { time: 179, text: "And they never ever can see us" }
     ]
   },  {
     title: "love virus",
@@ -620,7 +1180,34 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+     { time: 25, text: "끝났어 이제서야 겨우" },
+  { time: 35, text: "널 위한 내 오랜 기다림" },
+  { time: 45, text: "죽었어 오늘에서야 겨우" },
+  { time: 55, text: "내 안에 숨 쉬던 니 모습들은" },
+  { time: 65, text: "사랑이라는 건 오래전에" },
+  { time: 70, text: "없어져 버린 옛날이야기" },
+  { time: 75, text: "니가 믿지 않았던 사랑이란 말" },
+  { time: 81, text: "나도 이제 그런가봐" },
+  { time: 85, text: "이제는 잘 가 이제는 멀리" },
+  { time: 90, text: "내가 널 볼 수 없는 곳까지" },
+  { time: 95, text: "다시는 나를 다시는 너를" },
+  { time: 100, text: "아프게 하지 않는 곳으로" },
+  { time: 110, text: "울었어 울어야만 했어" },
+  { time: 119, text: "차라리 다시 아플 수 있다면" },
+  { time: 128, text: "사랑이라는 건 오래전에" },
+  { time: 133, text: "없어져 버린 옛날이야기" },
+  { time: 138, text: "니가 믿지 않았던 사랑이란 말" },
+  { time: 144, text: "나도 이제 그런가봐" },
+  { time: 148.4, text: "이제는 잘 가 이제는 멀리" },
+  { time: 153, text: "내가 널 볼 수 없는 곳까지" },
+  { time: 158.5, text: "다시는 나를 다시는 너를" },
+  { time: 163, text: "아프게 하지 않는 곳으로" },
+  { time: 188.7, text: "이제는 잘 가 이제는 멀리" },
+  { time: 194, text: "내가 널 볼 수 없는 곳까지" },
+  { time: 199, text: "다시는 나를 다시는 너를" },
+  { time: 204, text: "아프게 하지 않는 곳으로" },
+  { time: 211.5, text: "Oh oh oh oh oh oh" },
+  { time: 219, text: "(다시는 나를 다시는 너를)" },
     ]
   },  {
     title: "Rialto",
@@ -632,7 +1219,49 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 5.5, text: "At eight o'clock we said goodbye" },
+  { time: 13.5, text: "That's when I left her house for mine" },
+  { time: 22, text: "She said that she'd be staying in" },
+  { time: 30, text: "Well she had to be at work by nine" },
+  { time: 38, text: "So I get home and have a bath" },
+  { time: 46, text: "And let an hour or two pass drifting in front of my TV" },
+  { time: 63, text: "When a film comes on that she wants to see" },
+  { time: 70, text: "It's Monday morning 5:19" },
+  { time: 75, text: "And I'm still wondering where she's been" },
+  { time: 79, text: "'Cause every time I try to call" },
+  { time: 83, text: "I just get her machine" },
+  { time: 87, text: "And now it's almost six a.m." },
+  { time: 91, text: "And I don't want to try again" },
+  { time: 95, text: "'Cause if she's still not back" },
+  { time: 97, text: "Then this must be the end" },
+  { time: 105, text: "At first I guess she's gone to get" },
+  { time: 114, text: "Herself a pack of cigarettes" },
+  { time: 121.5, text: "A pint of milk, food for the cat" },
+  { time: 130, text: "But it's midnight now" },
+  { time: 133.8, text: "And she's still not back" },
+  { time: 138, text: "It's Monday morning 5:19" },
+  { time: 141.7, text: "And I'm still wondering where she's been" },
+  { time: 146, text: "'Cause every time I try to call" },
+  { time: 150, text: "I just get her machine" },
+  { time: 154, text: "And now it's almost six a.m." },
+  { time: 158, text: "And I don't want to try again" },
+  { time: 162, text: "'Cause if she's still not back" },
+  { time: 165, text: "Well heaven knows what then" },
+  { time: 170, text: "Is this the end?" },
+  { time: 205, text: "At half past two I picture her" },
+  { time: 213, text: "In the back of someone else's car" },
+  { time: 222, text: "He runs his fingers through her hair" },
+  { time: 230, text: "Oh you shouldn't let" },
+  { time: 233.6, text: "Him touch you there" },
+  { time: 237.7, text: "It's Monday morning 5:19" },
+  { time: 242, text: "And I'm still wondering where she's been" },
+  { time: 246, text: "'Cause every time I try to call" },
+  { time: 249.8, text: "I just get her machine" },
+  { time: 253.6, text: "And now it's almost six a.m." },
+  { time: 258, text: "And I don't want to try again" },
+  { time: 262, text: "'Cause if she's still not back" },
+  { time: 265, text: "Well heaven knows what then" },
+  { time: 270, text: "Is this the end?" }
     ]
   },  {
     title: "numb",
@@ -644,10 +1273,49 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 10.6, text: "다 그런 거야, 원래 이별이" },
+  { time: 16, text: "입맞춤 끝에눈물만 남은 듯" },
+  { time: 22, text: "애써 외면 해 보려고 해" },
+  { time: 28, text: "이미 다 끝난, 우리는 남인데" },
+  { time: 34, text: "마음을 알기도 전에 넌 됐어" },
+  { time: 40, text: "다시 내 손을 놓으려 해" },
+  { time: 45.8, text: "난 또 널 붙잡고 굳이 애써" },
+  { time: 51, text: "이 사랑을 불태워야 해" },
+  { time: 57, text: "다시는 I don't wanna fall in love" },
+  { time: 60, text: "결국 비참해져 버린 love" },
+  { time: 63, text: "이젠 독이 되어버린걸" },
+  { time: 65, text: "I'm good enough 이만하면" },
+  { time: 69, text: "됐으니까, 떠나가 버려" },
+  { time: 71, text: "영원을 약속한 우리는, all gone" },
+  { time: 75, text: "독이 되어버린걸, we're good enough" },
+  { time: 78, text: "I hate this love, but I'm still numb" },
+  { time: 86, text: "다 이런 거야? 원래 이별이란 게" },
+  { time: 92, text: "어렵게 시작되고 쉽게 끝이 나는" },
+  { time: 97, text: "모든 게 잊혀지긴 싫어, 넌 한순간에 날 잊어도" },
+  { time: 103.7, text: "난 어려운데, 왜 넌 그게 쉬운데?" },
+  { time: 109, text: "마음을 알기도 전에 넌 됐어" },
+  { time: 115, text: "다시 내 손을 놓으려 해" },
+  { time: 121, text: "난 또 널 붙잡고 굳이 애써" },
+  { time: 127, text: "이 사랑을 불태워야 해" },
+  { time: 132, text: "다시는 I don't wanna fall in love" },
+  { time: 135, text: "결국 비참해져 버린 love" },
+  { time: 138, text: "이젠 독이 되어버린걸" },
+  { time: 140, text: "I'm good enough 이만하면" },
+  { time: 144, text: "됐으니까, 떠나가 버려" },
+  { time: 146.8, text: "영원을 약속한 우리는, all gone" },
+  { time: 150, text: "독이 되어버린걸, we're good enough" },
+  { time: 153, text: "I hate this love" },
+  { time: 156, text: "It's not love" },
+  { time: 161, text: "영원이란 가면을 쓴 채" },
+  { time: 167, text: "Yeah, I'm still numb" },
+  { time: 173, text: "이 사랑을 불태워야 해" },
+  { time: 178.5, text: "It's not love, love, love, love" },
+  { time: 190, text: "It's not love, love, love, love, love" },
+  { time: 201.5, text: "Yeah, I'm still numb" },
+  { time: 207.6, text: "Yeah, I'm still numb" }
     ]
   },  {
-    title: "hope",
+    title: "only hope",
     artist: "mandy moore",
     emoji: "🌧️",
     image: "images/19.png",
@@ -656,7 +1324,29 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 7, text: "There's a song that's inside of my soul" },
+  { time: 15, text: "It's the one that I've tried to write over and over again" },
+  { time: 24, text: "I'm awake and in the infinite cold" },
+  { time: 33, text: "But You sing to me" },
+  { time: 35.5, text: "Over and over and over again" },
+  { time: 41, text: "So I lay my head back down and I lift my hands" },
+  { time: 55, text: "And pray to be only Yours" },
+  { time: 60, text: "I pray to be only Yours" },
+  { time: 64, text: "I know now You're my only hope" },
+  { time: 77.5, text: "Sing to me of the song of the stars" },
+  { time: 87, text: "Of Your galaxy dancing and laughing and laughing again" },
+  { time: 96, text: "When it feels like my dreams are so far" },
+  { time: 104.5, text: "Sing to me of the plans that You have for me over again" },
+  { time: 113, text: "So I lay my head back down" },
+  { time: 122, text: "And i lift my hands" },
+  { time: 126, text: "And pray to be only Yours" },
+  { time: 131, text: "I pray to be only Yours" },
+  { time: 135, text: "I know now You're my only hope" },
+  { time: 145, text: "I give You my destiny" },
+  { time: 150, text: "I'm giving You all of me" },
+  { time: 155, text: "I want Your symphony" },
+  { time: 158, text: "Singing in all that I am" },
+  { time: 162, text: "At the top of my lungs I'm giving it back" }
     ]
   },  {
     title: "should be you",
@@ -668,7 +1358,36 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 9.5, text: "Oh, 그대여" },
+  { time: 12.8, text: "꺾을 수 있는 꽃이 되어 주세요" },
+  { time: 20, text: "Oh, 그대여" },
+  { time: 23, text: "남은 것은 화면 속의 낯선 여자들 뿐" },
+  { time: 31, text: "너여야만 하는데 그걸 몰라서 (Don't lie)" },
+  { time: 36, text: "추한 실수를 저지르고 말았어" },
+  { time: 40, text: "Girl, if I die, girl, if I cry" },
+  { time: 45, text: "잊지 못한 맘 that should be you, babe" },
+  { time: 50, text: "너가 언젠가 전부 끝낸다면" },
+  { time: 55, text: "That should be me, that should be me" },
+  { time: 60, text: "That should be you" },
+  { time: 66, text: "Girl, we can fix it" },
+  { time: 69, text: "아무도 몰라 내가 얼마나 널 사랑하는지 (That bitch)" },
+  { time: 77, text: "Fucked my body, oh, not my mind" },
+  { time: 82, text: "I can't hold more time, come back home now" },
+  { time: 86, text: "필연적인 말로 사랑해 정말로" },
+  { time: 91.5, text: "But, baby, our love will never shine your night" },
+  { time: 96.7, text: "Girl, if I die, girl, if I cry" },
+  { time: 101.6, text: "잊지 못한 맘 that should be you, babe" },
+  { time: 106.7, text: "너가 언젠가 전부 끝낸다면" },
+  { time: 112, text: "That should be me, that should be me" },
+  { time: 117, text: "That should be you" },
+  { time: 137.8, text: "Girl, if I die, girl, if I drown" },
+  { time: 143, text: "나의 마지막 나의 모든 이면" },
+  { time: 148, text: "너가 언젠가 모두 포기하면" },
+  { time: 153, text: "That should be me, that should be me" },
+  { time: 158, text: "That should be you" },
+  { time: 168, text: "That should be you" },
+  { time: 173.8, text: "That should be me, that should be you" },
+  { time: 179, text: "That should be us" }
     ]
   },  {
     title: "Traffic Jam",
@@ -680,7 +1399,41 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 19.7, text: "알 수 없이 막힌 거리" },
+  { time: 28, text: "네 생각에 다급해져" },
+  { time: 35, text: "넌 저편에 있는지" },
+  { time: 38, text: "닿을 수는 있는 건지" },
+  { time: 43.7, text: "정말 알 수 없지만" },
+  { time: 46, text: "너에게로 가고 있어" },
+  { time: 53, text: "Don't know what to do" },
+  { time: 57, text: "Don't know what to do at all" },
+  { time: 61, text: "Don't know what to do" },
+  { time: 65, text: "Don't know what to do" },
+  { time: 67, text: "When I'm like this" },
+  { time: 72.5, text: "한참을 더 멈추게 돼" },
+  { time: 81, text: "빨간 불빛만 반복되는 듯해" },
+  { time: 90, text: "So don't you wanna save me" },
+  { time: 94, text: "계속 널 원하고 있었어" },
+  { time: 99, text: "벗어나질 못해 너를" },
+  { time: 121, text: "So don't you wanna save me" },
+  { time: 126, text: "계속 널 원하고 있었어" },
+  { time: 130, text: "벗어나질 못하는 길" },
+  { time: 138, text: "Don't know what to do" },
+  { time: 140, text: "Don't know what to do" },
+  { time: 142, text: "Don't know what to do" },
+  { time: 144, text: "When I'm like this" },
+  { time: 146, text: "Don't know what to do" },
+  { time: 148, text: "Don't know what to do" },
+  { time: 150, text: "Don't know what to do" },
+  { time: 152, text: "When I'm like this" },
+  { time: 155, text: "Don't know what to do" },
+  { time: 156.8, text: "Don't know what to do" },
+  { time: 159, text: "Don't know what to do" },
+  { time: 160.7, text: "When I'm like this" },
+  { time: 163, text: "Don't know what to do" },
+  { time: 165, text: "Don't know what to do" },
+  { time: 167.5, text: "Don't know what to do" },
+  { time: 169.4, text: "When I'm like this" }
     ]
   },  {
     title: "With you",
@@ -692,10 +1445,36 @@ const songs = [
     likes: 189,
     theme: "rain",
     lyrics: [
-     
+  { time: 0, text: "사랑은 따뜻한 말이 아니었나" },
+  { time: 10, text: "마음을 담아둘 자리가 없었나" },
+  { time: 20, text: "사람은 강인한 존재가 아니었나" },
+  { time: 30, text: "어쩌면 잔인한 단어들만 남았나" },
+  { time: 42, text: "네가 저 하늘 위를 물들일 때" },
+  { time: 47, text: "널 그리워한 맘 띄워보낼게" },
+  { time: 52, text: "네가 혼자서도 외롭지 않게" },
+  { time: 56, text: "오오 오오 오오 with you" },
+  { time: 80, text: "바라던 영원한 꿈을 맞이했나" },
+  { time: 90, text: "아팠던 밤들은 조금 나아졌나" },
+  { time: 100, text: "나의 하루는 말야 너의 바람과 달라" },
+  { time: 110, text: "엉망인 게 많아 넌 알 리 없겠지만" },
+  { time: 122, text: "네가 저 하늘 위를 물들일 때" },
+  { time: 127, text: "널 그리워한 맘 띄워보낼게" },
+  { time: 132, text: "네가 혼자서도 외롭지 않게" },
+  { time: 136, text: "오오 오오 오오 with you" },
+  { time: 142, text: "네가 저 하늘 위를 물들일 때" },
+  { time: 147, text: "널 그리워한 맘 띄워보낼게" },
+  { time: 152, text: "네가 혼자서도 외롭지 않게" },
+  { time: 156, text: "오오 오오 오오 with you" },
+  { time: 182, text: "네가 더 많은 날 알기를 바라" },
+  { time: 187, text: "널 그리워한 맘 띄워보낼 때" },
+  { time: 192, text: "네가 더 이상은 외롭지 않게" },
+  { time: 196, text: "오오 오오 오오 with you" },
+  { time: 202, text: "네가 저 하늘 위를 물들일 때" },
+  { time: 207, text: "널 그리워한 맘 띄워보낼게" },
+  { time: 212, text: "네가 혼자서도 외롭지 않게" },
+  { time: 216, text: "오오 오오 오오 with you" }
     ]
   }
-
   
   
 ];
@@ -923,11 +1702,8 @@ function updateLyrics(time) {
     if (i === activeIdx) el.classList.add('active');
     else if (i === activeIdx - 1) el.classList.add('prev1');
     else if (i === activeIdx + 1) el.classList.add('next1');
+
   });
-  // Scroll lyrics
-  const lineH = 42;
-  const offset = activeIdx * lineH - 60;
-  document.getElementById('lyrics-list').style.transform = `translateY(${-Math.max(0, offset)}px)`;
 }
 
 // ============================================================
